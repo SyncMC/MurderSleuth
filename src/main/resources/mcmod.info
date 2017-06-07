@@ -1,0 +1,16 @@
+[
+{
+  "modid": "murdersleuth",
+  "name": "MurderSleuth",
+  "description": "Detects player roles in Hypixel's Murder Mystery minigame.",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "https://syncmc.github.io/",
+  "updateUrl": "",
+  "authorList": ["SyncMC"],
+  "credits": "",
+  "logoFile": "assets/murdersleuth/textures/logo.png",
+  "screenshots": [],
+  "dependencies": []
+}
+]

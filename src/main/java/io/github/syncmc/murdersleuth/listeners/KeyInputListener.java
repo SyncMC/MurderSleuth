@@ -1,63 +1,43 @@
 package io.github.syncmc.murdersleuth.listeners;
 
+import io.github.syncmc.murdersleuth.enums.GameString;
 import io.github.syncmc.murdersleuth.handlers.KeybindHandler;
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
+import io.github.syncmc.murdersleuth.util.GameHelper;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 import net.minecraftforge.fml.common.gameevent.InputEvent;
 
 public class KeyInputListener
 {
-    public final MurderSleuthUtils murderSleuthUtils;
-    public KeyInputListener(MurderSleuthUtils murderSleuthUtils)
+    private final GameHelper gameHelper;
+    public KeyInputListener(GameHelper gameHelper)
     {
-        this.murderSleuthUtils = murderSleuthUtils;
-    }
-    
-    public enum PlayerView
-    {
-        ALL, ALIVE, INNOCENTS, HOLDING_BOWS, INNOCENTS_HOLDING_BOWS, DETECTIVE, MURDERER;
-        private static final PlayerView[] VALUES = values();
-        
-        public PlayerView next()
-        {
-            return VALUES[(this.ordinal() + 1) % VALUES.length];
-        }
-    }
-    
-    public enum GoldView
-    {
-        ALL, NONE;
-        private static final GoldView[] VALUES = values();
-        
-        public GoldView next()
-        {
-            return VALUES[(this.ordinal() + 1) % VALUES.length];
-        }
+        this.gameHelper = gameHelper;
     }
     
     @SubscribeEvent
     public void onKeyInput(InputEvent.KeyInputEvent event)
     {
-        if (KeybindHandler.showWeaponHolders.isPressed())
+        if (KeybindHandler.showPlayerData.isPressed())
         {
-            murderSleuthUtils.addMurdMsg();
-            murderSleuthUtils.addDetMsg();
-            murderSleuthUtils.addInnoBowMsgs();
+            gameHelper.chatHelper.addMurdererMessage();
+            gameHelper.chatHelper.addDetectiveMessage();
+            gameHelper.chatHelper.addNonMurdererWithBowMessages();
         }
         
-        if (KeybindHandler.clearWeaponHolders.isPressed())
+        if (KeybindHandler.clearPlayerData.isPressed())
         {
-            murderSleuthUtils.addMsg(murderSleuthUtils.clearWeaponHolders());
+            gameHelper.clearTrackedPlayerData();
+            gameHelper.chatHelper.addGameText(GameString.PLAYER_DATA_CLEARED.getGameText());
         }
         
         if (KeybindHandler.rotatePlayerView.isPressed())
         {
-            murderSleuthUtils.rotatePlayerView();
+            gameHelper.rotatePlayerView();
         }
         
         if (KeybindHandler.toggleGoldView.isPressed())
         {
-            murderSleuthUtils.toggleGoldView();
+            gameHelper.toggleGoldView();
         }
     }
 }

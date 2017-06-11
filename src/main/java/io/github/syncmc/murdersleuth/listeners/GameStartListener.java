@@ -1,7 +1,7 @@
 package io.github.syncmc.murdersleuth.listeners;
 
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
-import io.github.syncmc.murdersleuth.utils.GameText;
+import io.github.syncmc.murdersleuth.enums.GameString;
+import io.github.syncmc.murdersleuth.util.GameHelper;
 import net.minecraft.util.text.ITextComponent;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraftforge.client.event.ClientChatReceivedEvent;
@@ -9,19 +9,20 @@ import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class GameStartListener
 {
-    public final MurderSleuthUtils murderSleuthUtils;
-    public GameStartListener(MurderSleuthUtils murderSleuthUtils)
+    private final GameHelper gameHelper;
+    public GameStartListener(GameHelper gameHelper)
     {
-        this.murderSleuthUtils = murderSleuthUtils;
+        this.gameHelper = gameHelper;
     }
     
     @SubscribeEvent
     public void onServerChat(ClientChatReceivedEvent event)
     {
         ITextComponent component = event.getMessage();
-        if (component.getFormattedText().equals(GameText.GAME_START.getFormattedText()))
+        if (component.getFormattedText().equals(GameString.GAME_START.getGameText().getFormattedText()))
         {
-            component.appendSibling(new TextComponentString("\n" + murderSleuthUtils.clearWeaponHolders()));
+            gameHelper.clearTrackedPlayerData();
+            component.appendSibling(new TextComponentString("\n" + GameString.PLAYER_DATA_CLEARED.getGameText().getFormattedText()));
         }
     }
 }

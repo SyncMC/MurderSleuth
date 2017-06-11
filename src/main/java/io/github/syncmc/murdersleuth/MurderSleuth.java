@@ -5,8 +5,8 @@ import io.github.syncmc.murdersleuth.listeners.GameStartListener;
 import io.github.syncmc.murdersleuth.listeners.HoldWeaponListener;
 import io.github.syncmc.murdersleuth.listeners.KeyInputListener;
 import io.github.syncmc.murdersleuth.listeners.RenderPlayerListener;
-import io.github.syncmc.murdersleuth.rendering.GoldRenderFactory;
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
+import io.github.syncmc.murdersleuth.render.GoldRenderFactory;
+import io.github.syncmc.murdersleuth.util.GameHelper;
 import net.minecraft.entity.item.EntityItem;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.client.registry.RenderingRegistry;
@@ -19,21 +19,21 @@ import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 public class MurderSleuth
 {
     public static final String MODID = "murdersleuth";
-    public final MurderSleuthUtils murderSleuthUtils = new MurderSleuthUtils();
+    public final GameHelper gameHelper = new GameHelper();
     
     @EventHandler
     public void preInit(FMLPreInitializationEvent event)
     {
         KeybindHandler.init();
-        RenderingRegistry.registerEntityRenderingHandler(EntityItem.class, new GoldRenderFactory(murderSleuthUtils));
+        RenderingRegistry.registerEntityRenderingHandler(EntityItem.class, new GoldRenderFactory(gameHelper));
     }
     
     @EventHandler
     public void init(FMLInitializationEvent event)
     {
-        MinecraftForge.EVENT_BUS.register(new GameStartListener(murderSleuthUtils));
-        MinecraftForge.EVENT_BUS.register(new HoldWeaponListener(murderSleuthUtils));
-        MinecraftForge.EVENT_BUS.register(new KeyInputListener(murderSleuthUtils));
-        MinecraftForge.EVENT_BUS.register(new RenderPlayerListener(murderSleuthUtils));
+        MinecraftForge.EVENT_BUS.register(new GameStartListener(gameHelper));
+        MinecraftForge.EVENT_BUS.register(new HoldWeaponListener(gameHelper));
+        MinecraftForge.EVENT_BUS.register(new KeyInputListener(gameHelper));
+        MinecraftForge.EVENT_BUS.register(new RenderPlayerListener(gameHelper));
     }
 }

@@ -8,20 +8,20 @@ import net.minecraftforge.fml.client.registry.ClientRegistry;
 public class KeybindHandler
 {
     public static final String CATEGORY = "key.categories.murdersleuth";
-    public static KeyBinding showWeaponHolders;
-    public static KeyBinding clearWeaponHolders;
+    public static KeyBinding showPlayerData;
+    public static KeyBinding clearPlayerData;
     public static KeyBinding rotatePlayerView;
     public static KeyBinding toggleGoldView;
     
     public static void init()
     {
-        showWeaponHolders = new KeyBinding("key.murdersleuth.showWeaponHolders", Keyboard.KEY_M, CATEGORY);
-        clearWeaponHolders = new KeyBinding("key.murdersleuth.clearWeaponHolders", Keyboard.KEY_C, CATEGORY);
-        rotatePlayerView = new KeyBinding("key.murdersleuth.rotatePlayerView", Keyboard.KEY_P, CATEGORY);
-        toggleGoldView = new KeyBinding("key.murdersleuth.toggleGoldView", Keyboard.KEY_G, CATEGORY);
+        KeybindHandler.showPlayerData = new KeyBinding("key.murdersleuth.showPlayerData", Keyboard.KEY_M, CATEGORY);
+        KeybindHandler.clearPlayerData = new KeyBinding("key.murdersleuth.clearPlayerData", Keyboard.KEY_C, CATEGORY);
+        KeybindHandler.rotatePlayerView = new KeyBinding("key.murdersleuth.rotatePlayerView", Keyboard.KEY_P, CATEGORY);
+        KeybindHandler.toggleGoldView = new KeyBinding("key.murdersleuth.toggleGoldView", Keyboard.KEY_G, CATEGORY);
         
-        ClientRegistry.registerKeyBinding(showWeaponHolders);
-        ClientRegistry.registerKeyBinding(clearWeaponHolders);
+        ClientRegistry.registerKeyBinding(showPlayerData);
+        ClientRegistry.registerKeyBinding(clearPlayerData);
         ClientRegistry.registerKeyBinding(rotatePlayerView);
         ClientRegistry.registerKeyBinding(toggleGoldView);
     }

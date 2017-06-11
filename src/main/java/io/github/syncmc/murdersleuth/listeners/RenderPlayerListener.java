@@ -2,66 +2,81 @@ package io.github.syncmc.murdersleuth.listeners;
 
 import java.util.UUID;
 
-import io.github.syncmc.murdersleuth.listeners.KeyInputListener.PlayerView;
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
+import io.github.syncmc.murdersleuth.enums.PlayerRole;
+import io.github.syncmc.murdersleuth.util.GameHelper;
+import io.github.syncmc.murdersleuth.util.PlayerData;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
 public class RenderPlayerListener
 {
-    public final MurderSleuthUtils murderSleuthUtils;
-    public RenderPlayerListener(MurderSleuthUtils murderSleuthUtils)
+    private final GameHelper gameHelper;
+    public RenderPlayerListener(GameHelper gameHelper)
     {
-        this.murderSleuthUtils = murderSleuthUtils;
+        this.gameHelper = gameHelper;
     }
     
     @SubscribeEvent
     public void onPreRenderPlayer(RenderPlayerEvent.Pre event)
     {
         EntityPlayer player = event.getEntityPlayer();
-        UUID uuid = MurderSleuthUtils.getPlayerUUID(player);
-        
-        if (murderSleuthUtils.playerView == PlayerView.MURDERER)
+        if (player instanceof AbstractClientPlayer)
         {
-            if (murderSleuthUtils.murdUUID != uuid)
+            AbstractClientPlayer clientPlayer = (AbstractClientPlayer) player;
+            UUID playerUUID = GameHelper.getUUID(clientPlayer);
+            PlayerData playerData = gameHelper.getPlayerData(playerUUID);
+            PlayerRole playerRole = playerData.getPlayerRole();
+            
+            switch(gameHelper.playerView)
             {
-                event.setCanceled(true);
-            }
-        }
-        else if (murderSleuthUtils.playerView != PlayerView.ALL)
-        {
-            if (player.isPlayerSleeping())
-            {
-                event.setCanceled(true);
-            }
-            else if (murderSleuthUtils.playerView == PlayerView.DETECTIVE)
-            {
-                if (murderSleuthUtils.detUUID != uuid)
+            case ALL:
+                break;
+            case ALIVE:
+                if (clientPlayer.isPlayerSleeping())
                 {
                     event.setCanceled(true);
                 }
-            }
-            else if (murderSleuthUtils.playerView == PlayerView.HOLDING_BOWS)
-            {
-                if (!murderSleuthUtils.innosWithBows.containsKey(uuid) && murderSleuthUtils.detUUID != uuid)
+                
+                break;
+            case NON_MURDERERS:
+                if (playerRole == PlayerRole.MURDERER)
                 {
                     event.setCanceled(true);
                 }
-            }
-            else if (murderSleuthUtils.playerView == PlayerView.INNOCENTS_HOLDING_BOWS)
-            {
-                if (!murderSleuthUtils.innosWithBows.containsKey(uuid) || murderSleuthUtils.murdUUID == uuid)
+                
+                break;
+            case HOLDING_BOWS:
+                if (!playerData.hasBow())
                 {
                     event.setCanceled(true);
                 }
-            }
-            else if (murderSleuthUtils.playerView == PlayerView.INNOCENTS)
-            {
-                if (murderSleuthUtils.murdUUID == uuid || murderSleuthUtils.detUUID == uuid)
+                
+                break;
+            case NON_MURDERERS_HOLDING_BOWS:
+                if (playerRole == PlayerRole.MURDERER || !playerData.hasBow())
                 {
                     event.setCanceled(true);
                 }
+                
+                break;
+            case DETECTIVE:
+                if (playerRole != PlayerRole.DETECTIVE)
+                {
+                    event.setCanceled(true);
+                }
+                
+                break;
+            case MURDERER:
+                if (playerRole != PlayerRole.MURDERER)
+                {
+                    event.setCanceled(true);
+                }
+                
+                break;
+            default:
+                break;
             }
         }
     }

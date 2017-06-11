@@ -1,7 +1,7 @@
-package io.github.syncmc.murdersleuth.rendering;
+package io.github.syncmc.murdersleuth.render;
 
-import io.github.syncmc.murdersleuth.listeners.KeyInputListener.GoldView;
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
+import io.github.syncmc.murdersleuth.enums.GoldView;
+import io.github.syncmc.murdersleuth.util.GameHelper;
 import net.minecraft.client.renderer.RenderItem;
 import net.minecraft.client.renderer.entity.RenderEntityItem;
 import net.minecraft.client.renderer.entity.RenderManager;
@@ -10,8 +10,8 @@ import net.minecraft.init.Items;
 
 public class RenderGold extends RenderEntityItem
 {
-    public final MurderSleuthUtils murderSleuthUtils;
-    public RenderGold(RenderManager renderManagerIn, RenderItem renderItemIn, MurderSleuthUtils murderSleuthUtils)
+    public final GameHelper murderSleuthUtils;
+    public RenderGold(RenderManager renderManagerIn, RenderItem renderItemIn, GameHelper murderSleuthUtils)
     {
         super(renderManagerIn, renderItemIn);
         this.murderSleuthUtils = murderSleuthUtils;

@@ -1,6 +1,6 @@
-key.murdersleuth.showWeaponHolders=Show the Names of Those With Weapons in Chat
-key.murdersleuth.clearWeaponHolders=Reset the Weapon Holding Status of All Players
-key.murdersleuth.rotatePlayerView=Rotate Between Different Modes of Player Visibility
+key.murdersleuth.showPlayerData=Show Player Data
+key.murdersleuth.clearPlayerData=Clear Player Data
+key.murdersleuth.rotatePlayerView=Rotate Mode of Player Visibility
 key.murdersleuth.toggleGoldView=Toggle Visibility of Gold Ingots
 
 key.categories.murdersleuth=MurderSleuth

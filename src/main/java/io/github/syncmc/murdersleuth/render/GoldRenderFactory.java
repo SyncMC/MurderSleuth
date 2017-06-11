@@ -1,6 +1,6 @@
-package io.github.syncmc.murdersleuth.rendering;
+package io.github.syncmc.murdersleuth.render;
 
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
+import io.github.syncmc.murdersleuth.util.GameHelper;
 import net.minecraft.client.renderer.entity.Render;
 import net.minecraft.client.renderer.entity.RenderManager;
 import net.minecraft.entity.item.EntityItem;
@@ -8,8 +8,8 @@ import net.minecraftforge.fml.client.registry.IRenderFactory;
 
 public class GoldRenderFactory implements IRenderFactory<EntityItem>
 {
-    public final MurderSleuthUtils murderSleuthUtils;
-    public GoldRenderFactory(MurderSleuthUtils murderSleuthUtils)
+    public final GameHelper murderSleuthUtils;
+    public GoldRenderFactory(GameHelper murderSleuthUtils)
     {
         this.murderSleuthUtils = murderSleuthUtils;
     }
@@ -17,6 +17,6 @@ public class GoldRenderFactory implements IRenderFactory<EntityItem>
     @Override
     public Render<? super EntityItem> createRenderFor(RenderManager manager)
     {
-        return new RenderGold(manager, MurderSleuthUtils.mc.getRenderItem(), murderSleuthUtils);
+        return new RenderGold(manager, GameHelper.mc.getRenderItem(), murderSleuthUtils);
     }
 }

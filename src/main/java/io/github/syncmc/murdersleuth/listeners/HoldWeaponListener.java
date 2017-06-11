@@ -1,72 +1,108 @@
 package io.github.syncmc.murdersleuth.listeners;
 
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
-import io.github.syncmc.murdersleuth.utils.GameText;
-import io.github.syncmc.murdersleuth.utils.MurderSleuthUtils;
-import net.minecraft.entity.Entity;
+import io.github.syncmc.murdersleuth.enums.GameString;
+import io.github.syncmc.murdersleuth.enums.PlayerRole;
+import io.github.syncmc.murdersleuth.util.GameHelper;
+import io.github.syncmc.murdersleuth.util.PlayerData;
+import net.minecraft.client.entity.AbstractClientPlayer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.init.Items;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
-import net.minecraftforge.fml.common.gameevent.TickEvent.ClientTickEvent;
 import net.minecraftforge.fml.common.gameevent.TickEvent.Phase;
+import net.minecraftforge.fml.common.gameevent.TickEvent.PlayerTickEvent;
 
 public class HoldWeaponListener
 {
-    public final MurderSleuthUtils murderSleuthUtils;
-    public HoldWeaponListener(MurderSleuthUtils murderSleuthUtils)
+    private final GameHelper gameHelper;
+    public HoldWeaponListener(GameHelper gameHelper)
     {
-        this.murderSleuthUtils = murderSleuthUtils;
+        this.gameHelper = gameHelper;
     }
     
     @SubscribeEvent
-    public void onClientTick(ClientTickEvent event)
+    public void onPlayerTick(PlayerTickEvent event)
     {
-        if (event.phase == Phase.END && !murderSleuthUtils.clearing)
+        if (event.phase == Phase.END)
         {
-            murderSleuthUtils.assignVars();
-            if (murderSleuthUtils.varsNotNull())
+            gameHelper.player = GameHelper.mc.player;
+            if (gameHelper.player != null)
             {
-                List<Entity> entities = murderSleuthUtils.world.getLoadedEntityList();
-                for (Entity entity : entities)
+                EntityPlayer player = event.player;
+                if (player instanceof AbstractClientPlayer)
                 {
-                    if (entity instanceof EntityPlayer)
+                    AbstractClientPlayer clientPlayer = (AbstractClientPlayer) player;
+                    UUID playerUUID = GameHelper.getUUID(clientPlayer);
+                    PlayerData playerData = gameHelper.getPlayerData(playerUUID);
+                    PlayerRole playerRole = playerData.getPlayerRole();
+                    
+                    if (playerRole == PlayerRole.NONE)
                     {
-                        EntityPlayer otherPlayer = (EntityPlayer) entity;
-                        UUID uuid = MurderSleuthUtils.getPlayerUUID(otherPlayer);
+                        PlayerData newPlayerData = new PlayerData(clientPlayer.getName(), clientPlayer.getLocationSkin(), PlayerRole.UNKNOWN, false);
+                        playerData = newPlayerData;
+                        playerRole = playerData.getPlayerRole();
+                        gameHelper.setPlayerData(playerUUID, playerData);
+                    }
+                    
+                    if (playerRole == PlayerRole.UNKNOWN || playerRole == PlayerRole.INNOCENT || (playerRole == PlayerRole.MURDERER && !playerData.hasBow()))
+                    {
+                        UUID murdererUUID = gameHelper.getMurdererUUID();
                         
-                        ItemStack itemStack = otherPlayer.inventory.getCurrentItem();
+                        ItemStack itemStack = GameHelper.getHeldItemStack(clientPlayer);
                         Item item = itemStack.getItem();
                         
-                        if (murderSleuthUtils.murdUUID != uuid && item == Items.IRON_SWORD && itemStack.getDisplayName().equals(GameText.KNIFE_NAME.getStrippedFormattedText()) && murderSleuthUtils.getLore(itemStack).equals(murderSleuthUtils.knifeLore))
+                        if (playerRole == PlayerRole.UNKNOWN && murdererUUID == null && item == Items.IRON_SWORD && itemStack.getDisplayName().equals(GameString.KNIFE_NAME.getGameText().getStrippedFormattedText()) && GameHelper.getLore(itemStack).equals(gameHelper.knifeLore))
                         {
-                            murderSleuthUtils.murderer = otherPlayer;
-                            murderSleuthUtils.murdUUID = uuid;
-                            murderSleuthUtils.addMurdMsg();
+                            playerData.setPlayerRole(PlayerRole.MURDERER);
+                            gameHelper.setPlayerData(playerUUID, playerData);
+                            gameHelper.chatHelper.addMurdererMessage();
                         }
-                        else if (item == Items.BOW && itemStack.getDisplayName().equals(GameText.BOW_NAME.getStrippedFormattedText()))
+                        else if (item == Items.BOW && itemStack.getDisplayName().equals(GameString.BOW_NAME.getGameText().getStrippedFormattedText()))
                         {
-                            if (murderSleuthUtils.detUUID != uuid && murderSleuthUtils.getLore(itemStack).equals(murderSleuthUtils.detBowLore))
+                            if ((playerRole == PlayerRole.UNKNOWN || playerRole == PlayerRole.INNOCENT) && gameHelper.getDetectiveUUID() != playerUUID && GameHelper.getLore(itemStack).equals(gameHelper.detBowLore))
                             {
-                                murderSleuthUtils.detective = otherPlayer;
-                                murderSleuthUtils.detUUID = uuid;
-                                murderSleuthUtils.addDetMsg();
+                                playerData.setPlayerRole(PlayerRole.DETECTIVE).setHasBow(true);
+                                gameHelper.setPlayerData(playerUUID, playerData);
+                                gameHelper.chatHelper.addDetectiveMessage();
                             }
-                            else if (!murderSleuthUtils.innosWithBows.containsKey(uuid) && murderSleuthUtils.getLore(itemStack).equals(murderSleuthUtils.innoBowLore))
+                            else if (GameHelper.getLore(itemStack).equals(gameHelper.innoBowLore))
                             {
-                                murderSleuthUtils.innosWithBows.put(uuid, otherPlayer);
-                                if (murderSleuthUtils.murdUUID == uuid)
+                                if ((playerRole == PlayerRole.UNKNOWN || playerRole == PlayerRole.INNOCENT) && !playerData.hasBow())
                                 {
-                                    murderSleuthUtils.addMurdBowMsg();
+                                    playerData.setHasBow(true);
+                                    gameHelper.setPlayerData(playerUUID, playerData);
+                                    gameHelper.chatHelper.addNonMurdererWithBowMessage(playerUUID);
                                 }
-                                else
+                                else if (playerRole == PlayerRole.MURDERER)
                                 {
-                                    murderSleuthUtils.addInnoBowMsg(uuid);
+                                    playerData.setHasBow(true);
+                                    gameHelper.setPlayerData(playerUUID, playerData);
+                                    gameHelper.chatHelper.addMurdererWithBowMessage();
                                 }
                             }
+                        }
+                        
+                        if (playerRole == PlayerRole.UNKNOWN && murdererUUID != null)
+                        {
+                            playerData.setPlayerRole(PlayerRole.INNOCENT);
+                            gameHelper.setPlayerData(playerUUID, playerData);
+                        }
+                    }
+                    
+                    for (Entry<UUID, PlayerData> entry : gameHelper.getTrackedPlayerData().entrySet())
+                    {
+                        UUID trackedPlayerUUID = entry.getKey();
+                        EntityPlayer foundPlayer = gameHelper.player.getEntityWorld().getPlayerEntityByUUID(trackedPlayerUUID);
+                        
+                        if (foundPlayer == null)
+                        {
+                            PlayerData trackedPlayerData = entry.getValue();
+                            trackedPlayerData.setPlayerRole(PlayerRole.DEAD);
+                            gameHelper.setPlayerData(trackedPlayerUUID, trackedPlayerData);
                         }
                     }
                 }

@@ -1,5 +1,17 @@
 # Change Log
 
+## [v2.0.0.0](https://github.com/SyncMC/MurderSleuth/tree/v2.0.0.0) (2017-06-11)
+[Full Changelog](https://github.com/SyncMC/MurderSleuth/compare/v1.0.0.0...v2.0.0.0)
+
+**Implemented enhancements:**
+
+- Combine murderer messages [\#1](https://github.com/SyncMC/MurderSleuth/issues/1)
+
+**Fixed bugs:**
+
+- Players with bows potentially mislabeled [\#7](https://github.com/SyncMC/MurderSleuth/issues/7)
+- Duplicate murderer messages [\#6](https://github.com/SyncMC/MurderSleuth/issues/6)
+
 ## [v1.0.0.0](https://github.com/SyncMC/MurderSleuth/tree/v1.0.0.0) (2017-06-08)
 
 

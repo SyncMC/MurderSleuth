@@ -8,49 +8,92 @@ import net.minecraft.util.text.TextComponentString;
 
 public class ChatHelper
 {
-    private final GameHelper gameHelper;
-    public ChatHelper(GameHelper gameHelper)
+    private ChatHelper()
     {
-        this.gameHelper = gameHelper;
     }
-    
-    public void addMessage(String msg)
+
+    private static class InstanceHolder
     {
-        if (gameHelper.player != null)
+        public static final ChatHelper INSTANCE = new ChatHelper();
+    }
+
+    public static ChatHelper getInstance()
+    {
+        return InstanceHolder.INSTANCE;
+    }
+
+    public void addMessage(final String msg)
+    {
+        if (GameHelper.getInstance().localPlayer != null)
         {
-            gameHelper.player.sendMessage(new TextComponentString(msg));
+            GameHelper.getInstance().localPlayer.sendMessage(new TextComponentString(msg));
         }
     }
-    
-    public void addGameText(GameText gameText, boolean stripEnd)
+
+    public void addGameText(final GameText gameText, final boolean stripEnd)
     {
         this.addMessage(stripEnd ? gameText.getStrippedFormattedText() : gameText.getFormattedText());
     }
-    
-    public void addGameText(GameText gameText)
+
+    public void addGameText(final GameText gameText)
     {
         this.addGameText(gameText, false);
     }
-    
-    public void addNonMurdererWithBowMessage(UUID playerUUID)
+
+    public void addDetectiveMessage()
     {
-        PlayerData playerData = gameHelper.getPlayerData(playerUUID);
+        UUID playerUUID = GameHelper.getInstance().getDetectiveUUID();
+        if (playerUUID == null)
+        {
+            this.addGameText(GameString.NO_DETECTIVE.getGameText());
+        }
+        else
+        {
+            PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
+            this.addGameText(new GameText("AQUA + BOLD, GRAY, AQUA, GRAY", playerData.getPlayerName() + " ", "is the ",
+                    "detective", "!"));
+        }
+    }
+
+    public void addMurdererMessage()
+    {
+        UUID playerUUID = GameHelper.getInstance().getMurdererUUID();
+        if (playerUUID == null)
+        {
+            this.addGameText(GameString.NO_MURDERER.getGameText());
+        }
+        else
+        {
+            PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
+            this.addGameText(playerData.hasBow()
+                    ? new GameText("RED + BOLD, GRAY, RED, GRAY", playerData.getPlayerName() + " ", "is the ",
+                            "murderer ", "and has a bow!")
+                    : new GameText("RED + BOLD, GRAY, RED, GRAY", playerData.getPlayerName() + " ", "is the ",
+                            "murderer", "!"));
+        }
+    }
+
+    public void addNonMurdererWithBowMessage(final UUID playerUUID)
+    {
+        PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
         switch (playerData.getPlayerRole())
         {
-        case INNOCENT:
-            this.addGameText(new GameText("GREEN + BOLD, GRAY, GREEN, GRAY", playerData.getPlayerName() + " ", "is an ", "innocent ", "player with a bow!"));
-            break;
         case UNKNOWN:
-            this.addGameText(new GameText("YELLOW + BOLD, GRAY, YELLOW, GRAY", playerData.getPlayerName() + " ", "is an ", "unknown ", "player with a bow!"));
+            this.addGameText(new GameText("YELLOW + BOLD, GRAY, YELLOW, GRAY", playerData.getPlayerName() + " ",
+                    "is an ", "unknown ", "player with a bow!"));
+            break;
+        case INNOCENT:
+            this.addGameText(new GameText("GREEN + BOLD, GRAY, GREEN, GRAY", playerData.getPlayerName() + " ", "is an ",
+                    "innocent ", "player with a bow!"));
             break;
         default:
             break;
         }
     }
-    
+
     public void addNonMurdererWithBowMessages()
     {
-        List<UUID> nonMurderersWithBowsUUIDList = gameHelper.getNonMurderersWithBowsUUIDList();
+        List<UUID> nonMurderersWithBowsUUIDList = GameHelper.getInstance().getNonMurderersWithBowsUUIDList();
         if (nonMurderersWithBowsUUIDList.isEmpty())
         {
             this.addGameText(GameString.NO_NON_MURDERERS_WITH_BOWS.getGameText());
@@ -63,46 +106,61 @@ public class ChatHelper
             }
         }
     }
-    
-    public void addDetectiveMessage()
+
+    public void addMurdererWithBowMessage()
     {
-        UUID playerUUID = gameHelper.getDetectiveUUID();
+        UUID playerUUID = GameHelper.getInstance().getMurdererUUID();
+        if (playerUUID == null)
+        {
+            this.addGameText(GameString.NO_MURDERER.getGameText());
+        }
+        else
+        {
+            PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
+            this.addGameText(new GameText("GRAY, RED, GRAY, RED + BOLD, GRAY", "The ", "murderer", ", ",
+                    playerData.getPlayerName(), ", has acquired a bow!"));
+        }
+    }
+
+    public void addNonMurdererKilledMessage(final UUID playerUUID)
+    {
+        PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
+        switch (playerData.getPlayerRole())
+        {
+        case UNKNOWN:
+            this.addGameText(new GameText("YELLOW + BOLD, GRAY", playerData.getPlayerName() + " ", "has been killed!"));
+            break;
+        case INNOCENT:
+            this.addGameText(new GameText("GREEN + BOLD, GRAY", playerData.getPlayerName() + " ", "has been killed!"));
+            break;
+        default:
+            break;
+        }
+    }
+
+    public void addDetectiveKilledMessage(final UUID playerUUID)
+    {
         if (playerUUID == null)
         {
             this.addGameText(GameString.NO_DETECTIVE.getGameText());
         }
         else
         {
-            PlayerData playerData = gameHelper.getPlayerData(playerUUID);
-            this.addGameText(new GameText("AQUA + BOLD, GRAY, AQUA, GRAY", playerData.getPlayerName() + " ", "is the ", "detective", "!"));
+            PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
+            this.addGameText(new GameText("AQUA + BOLD, GRAY", playerData.getPlayerName() + " ", "has been killed!"));
         }
     }
-    
-    public void addMurdererMessage()
+
+    public void addMurdererKilledMessage(final UUID playerUUID)
     {
-        UUID playerUUID = gameHelper.getMurdererUUID();
         if (playerUUID == null)
         {
             this.addGameText(GameString.NO_MURDERER.getGameText());
         }
         else
         {
-            PlayerData playerData = gameHelper.getPlayerData(playerUUID);
-            this.addGameText(playerData.hasBow() ? new GameText("RED + BOLD, GRAY, RED, GRAY", playerData.getPlayerName() + " ", "is the ", "murderer ", "and has a bow!") : new GameText("RED + BOLD, GRAY, RED, GRAY", playerData.getPlayerName() + " ", "is the ", "murderer", "!"));
-        }
-    }
-    
-    public void addMurdererWithBowMessage()
-    {
-        UUID playerUUID = gameHelper.getMurdererUUID();
-        if (playerUUID == null)
-        {
-            this.addGameText(GameString.NO_MURDERER.getGameText());
-        }
-        else
-        {
-            PlayerData playerData = gameHelper.getPlayerData(playerUUID);
-            this.addGameText(new GameText("GRAY, RED, GRAY, RED + BOLD, GRAY", "The ", "murderer", ", ", playerData.getPlayerName(), ", has aquired a bow!"));
+            PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
+            this.addGameText(new GameText("RED + BOLD, GRAY", playerData.getPlayerName() + " ", "has been killed!"));
         }
     }
 }

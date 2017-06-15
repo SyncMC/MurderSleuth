@@ -10,26 +10,20 @@ import net.minecraft.entity.player.EntityPlayer;
 import net.minecraftforge.client.event.RenderPlayerEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
 
-public class RenderPlayerListener
+public class PreRenderPlayerListener
 {
-    private final GameHelper gameHelper;
-    public RenderPlayerListener(GameHelper gameHelper)
-    {
-        this.gameHelper = gameHelper;
-    }
-    
     @SubscribeEvent
-    public void onPreRenderPlayer(RenderPlayerEvent.Pre event)
+    public void onPreRenderPlayer(final RenderPlayerEvent.Pre event)
     {
         EntityPlayer player = event.getEntityPlayer();
         if (player instanceof AbstractClientPlayer)
         {
             AbstractClientPlayer clientPlayer = (AbstractClientPlayer) player;
             UUID playerUUID = GameHelper.getUUID(clientPlayer);
-            PlayerData playerData = gameHelper.getPlayerData(playerUUID);
+            PlayerData playerData = GameHelper.getInstance().getPlayerData(playerUUID);
             PlayerRole playerRole = playerData.getPlayerRole();
-            
-            switch(gameHelper.playerView)
+
+            switch (GameHelper.getInstance().playerView)
             {
             case ALL:
                 break;
@@ -38,42 +32,42 @@ public class RenderPlayerListener
                 {
                     event.setCanceled(true);
                 }
-                
+
                 break;
             case NON_MURDERERS:
                 if (playerRole == PlayerRole.MURDERER)
                 {
                     event.setCanceled(true);
                 }
-                
+
                 break;
             case HOLDING_BOWS:
                 if (!playerData.hasBow())
                 {
                     event.setCanceled(true);
                 }
-                
+
                 break;
             case NON_MURDERERS_HOLDING_BOWS:
                 if (playerRole == PlayerRole.MURDERER || !playerData.hasBow())
                 {
                     event.setCanceled(true);
                 }
-                
+
                 break;
             case DETECTIVE:
                 if (playerRole != PlayerRole.DETECTIVE)
                 {
                     event.setCanceled(true);
                 }
-                
+
                 break;
             case MURDERER:
                 if (playerRole != PlayerRole.MURDERER)
                 {
                     event.setCanceled(true);
                 }
-                
+
                 break;
             default:
                 break;

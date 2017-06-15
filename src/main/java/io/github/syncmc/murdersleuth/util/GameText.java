@@ -12,22 +12,23 @@ import net.minecraft.util.text.TextFormatting;
 public class GameText implements ITextComponent
 {
     private final ITextComponent textComponent;
-    public GameText(String commaStyleStrings, String... messages)
+
+    public GameText(final String commaStyleStrings, final String... messages)
     {
         this.textComponent = GameText.createITextComponent(commaStyleStrings, messages);
     }
-    
-    public static ITextComponent createITextComponent(String commaStyleStrings, String... messages)
+
+    public static ITextComponent createITextComponent(final String commaStyleStrings, final String... messages)
     {
-        ITextComponent component = null;
-        
+        ITextComponent textComponent = null;
+
         List<String> styleStringsList = Arrays.asList(commaStyleStrings.split(", ", -1));
         for (int i = 0; i < styleStringsList.size(); ++i)
         {
             ITextComponent sibling = new TextComponentString(messages[i]);
             Style style = sibling.getStyle();
-            
-            if (component != null)
+
+            if (textComponent != null)
             {
                 style.setBold(false);
                 style.setItalic(false);
@@ -35,10 +36,10 @@ public class GameText implements ITextComponent
                 style.setStrikethrough(false);
                 style.setUnderlined(false);
             }
-            
+
             String styleStrings = styleStringsList.get(i);
             List<String> styleStringList = Arrays.asList(styleStrings.split(" \\+ "));
-            
+
             for (String styleString : styleStringList)
             {
                 if (styleString.equals("BOLD"))
@@ -66,31 +67,31 @@ public class GameText implements ITextComponent
                     style.setColor(TextFormatting.getValueByName(styleString));
                 }
             }
-            
-            if (component == null)
+
+            if (textComponent == null)
             {
-                component = sibling;
+                textComponent = sibling;
             }
             else
             {
-                component.appendSibling(sibling);
+                textComponent.appendSibling(sibling);
             }
         }
-        
-        return component;
+
+        return textComponent;
     }
-    
+
     public ITextComponent getTextComponent()
     {
         return this.textComponent;
     }
-    
+
     public String getStrippedFormattedText()
     {
         String formattedText = this.getFormattedText();
         return formattedText.substring(0, formattedText.length() - 2);
     }
-    
+
     @Override
     public Iterator<ITextComponent> iterator()
     {
@@ -98,7 +99,7 @@ public class GameText implements ITextComponent
     }
 
     @Override
-    public ITextComponent setStyle(Style style)
+    public ITextComponent setStyle(final Style style)
     {
         return this.textComponent.setStyle(style);
     }
@@ -110,13 +111,13 @@ public class GameText implements ITextComponent
     }
 
     @Override
-    public ITextComponent appendText(String text)
+    public ITextComponent appendText(final String text)
     {
         return this.textComponent.appendText(text);
     }
 
     @Override
-    public ITextComponent appendSibling(ITextComponent component)
+    public ITextComponent appendSibling(final ITextComponent component)
     {
         return this.textComponent.appendSibling(component);
     }

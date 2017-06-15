@@ -10,17 +10,16 @@ import net.minecraft.init.Items;
 
 public class RenderGold extends RenderEntityItem
 {
-    public final GameHelper murderSleuthUtils;
-    public RenderGold(RenderManager renderManagerIn, RenderItem renderItemIn, GameHelper murderSleuthUtils)
+    public RenderGold(final RenderManager renderManagerIn, final RenderItem renderItemIn)
     {
         super(renderManagerIn, renderItemIn);
-        this.murderSleuthUtils = murderSleuthUtils;
     }
-    
+
     @Override
-    public void doRender(EntityItem entity, double x, double y, double z, float entityYaw, float partialTicks)
+    public void doRender(final EntityItem entity, final double x, final double y, final double z, final float entityYaw,
+            final float partialTicks)
     {
-        if (murderSleuthUtils.goldView == GoldView.ALL || entity.getEntityItem().getItem() != Items.GOLD_INGOT)
+        if (GameHelper.getInstance().goldView == GoldView.ALL || entity.getEntityItem().getItem() != Items.GOLD_INGOT)
         {
             super.doRender(entity, x, y, z, entityYaw, partialTicks);
         }

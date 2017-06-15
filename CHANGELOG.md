@@ -1,5 +1,16 @@
 # Change Log
 
+## [v2.0.1.0](https://github.com/SyncMC/MurderSleuth/tree/v2.0.1.0) (2017-06-15)
+[Full Changelog](https://github.com/SyncMC/MurderSleuth/compare/v2.0.0.0...v2.0.1.0)
+
+**Implemented enhancements:**
+
+- Add death messages [\#4](https://github.com/SyncMC/MurderSleuth/issues/4)
+
+**Fixed bugs:**
+
+- Cannot detect properly when local player is dead [\#8](https://github.com/SyncMC/MurderSleuth/issues/8)
+
 ## [v2.0.0.0](https://github.com/SyncMC/MurderSleuth/tree/v2.0.0.0) (2017-06-11)
 [Full Changelog](https://github.com/SyncMC/MurderSleuth/compare/v1.0.0.0...v2.0.0.0)
 
